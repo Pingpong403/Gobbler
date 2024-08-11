@@ -78,28 +78,36 @@ class Gobble {
   
   public void seek(LinkedList<Pellet> pList) {
     if (auto) {
+      // unset seek will get gobble out of seek mode
       boolean unsetSeek = false;
       for (Pellet p : pList) {
         if (seeking && isInsideSeek(p)) {
+          // only go towards the closest pellet; only relevant when
+          // gobble eats a pebble within range of others
           if (distanceFrom(p.getX(), p.getY()) < closest) {
+            // setting X and Y can give gobble massive speed;
             t.setXY(p.getX() - posX, p.getY() - posY);
+            // need to set to 1
             t.setSpeed(1);
             unsetSeek = true;
+            // set radius back to 150 and mark this pellet distance as closest
             seekRadius = 150;
             closest = distanceFrom(p.getX(), p.getY());
           }
         }
       }
       if (unsetSeek) { seeking = false; }
+      // time to find some pellets
       if (seeking && pList.size() > 0) {
         closest = 100000;
         seekRadius *= 1.001;
       }
     }
     else {
+      // follow mouse in control mode
       t.setXY(mouseX - posX, mouseY - posY);
       t.setSpeed(1);   // regular speed
-      //t.truncate(0.1); // for zooming
+      //t.truncate(0.1); // for zooming around
     }
   }
   
@@ -117,9 +125,7 @@ class Gobble {
   
   public void eat(Pellet p) {
     if (auto) {
-      if (radius < maxRadius) {
-        radius += p.getValue();
-      }
+      radius += p.getValue();
       if (radius > maxRadius) {
         radius = maxRadius;
       }
